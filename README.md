@@ -233,7 +233,7 @@ None known. These are my readings of things the handout leaves open:
 All of `src/` and `tests/`, and this README except the Experience section, were written by an AI
 assistant (Claude) at my request. The captures and `malformed.txt` come from the course. The
 assistant ran the builds, tests, coverage and leak checks, the `tshark` comparison and the fuzzing
-in my WSL environment.
+in my WSL environment, and the same build, tests, leak checks and capture checks on Onyx.
 
 ## Experience
 
