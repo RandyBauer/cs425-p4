@@ -145,7 +145,9 @@ Checks outside the unit tests (not submitted):
 
 ## Wireshark
 
-Checked in Wireshark 4.6.10 on Windows, with `day-in-the-life.pcap`.
+Checked in Wireshark 4.6.10 on Windows, with `day-in-the-life.pcap`. Wireshark sorts the
+conversations by Address A, and my summary lists them in the order they were first seen, so the
+rows below follow my order.
 
 ### Statistics → Conversations
 
@@ -158,7 +160,9 @@ Checked in Wireshark 4.6.10 on Windows, with `day-in-the-life.pcap`.
 | UDP 68.85.2.101:41337 <> 64.233.169.105:33434 | 1 | 82 | 1 | 82 |
 
 - **Checksums:** with *Validate the TCP checksum* and *Validate the UDP checksum* turned on,
-  Wireshark flags one frame, frame 15. That's the one my program prints as `cksum=bad`.
+  Wireshark flags one frame, frame 15. That's the one my program prints as `cksum=bad`. The
+  filter `tcp.checksum.status==0||udp.checksum.status==0` displays 1 of 24 packets, and
+  *Analyze → Expert Information* has a single error, "Bad checksum".
 - **Raw sequence numbers:** with *Relative sequence numbers* turned off, frames 10 to 13 show the
   same seq, ack and window as my output: `3127851020/0`, `2215467233/3127851021`,
   `3127851021/2215467234` twice.
@@ -233,7 +237,10 @@ None known. These are my readings of things the handout leaves open:
 All of `src/` and `tests/`, and this README except the Experience section, were written by an AI
 assistant (Claude) at my request. The captures and `malformed.txt` come from the course. The
 assistant ran the builds, tests, coverage and leak checks, the `tshark` comparison and the fuzzing
-in my WSL environment, and the same build, tests, leak checks and capture checks on Onyx.
+in my WSL environment, and the same build, tests, leak checks and capture checks on Onyx. It
+also ran the Wireshark checks. It started Wireshark with the preferences set on the command line,
+opened Statistics → Conversations and Expert Information through Windows UI Automation, and took
+screenshots of each.
 
 ## Experience
 
