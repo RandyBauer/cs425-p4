@@ -1,0 +1,3 @@
+# The captures are binary, and malformed.txt is compared byte for byte.
+*.pcap binary
+*.txt text eol=lf
