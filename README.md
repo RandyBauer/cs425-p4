@@ -171,6 +171,33 @@ rows below follow my order.
   validation on, because the bytes aren't there. My program prints `cksum=partial` for the same
   reason.
 
+### Screenshots
+
+Statistics → Conversations, TCP tab, with *Display raw data* ticked so Bytes is exact:
+
+![Wireshark Conversations, TCP tab](docs/wireshark/1-conversations-tcp.png)
+
+Statistics → Conversations, UDP tab:
+
+![Wireshark Conversations, UDP tab](docs/wireshark/1-conversations-udp.png)
+
+Checksum validation on, with the display filter `tcp.checksum.status==0||udp.checksum.status==0`.
+One of 24 packets is displayed, frame 15:
+
+![Wireshark showing only frame 15 with a bad checksum](docs/wireshark/2-bad-checksum-filter.png)
+
+Analyze → Expert Information, with checksum validation on:
+
+![Wireshark Expert Information with one Bad checksum error](docs/wireshark/2-expert-information.png)
+
+Relative sequence numbers off, frames 10 to 13:
+
+![Wireshark showing raw sequence numbers for frames 10 to 13](docs/wireshark/3-raw-sequence-numbers.png)
+
+`snaplen.pcap`, frame 15:
+
+![Wireshark showing snaplen.pcap frame 15, 1514 bytes on wire and 96 captured](docs/wireshark/4-snaplen-frame15.png)
+
 ### Disagreements
 
 None of the numbers disagreed. Two things looked like disagreements at first but are display
@@ -234,14 +261,35 @@ None known. These are my readings of things the handout leaves open:
 
 ## AI Usage
 
-All of `src/` and `tests/`, and this README except the Experience section, were written by an AI
-assistant (Claude) at my request. The captures and `malformed.txt` come from the course. The
+All of `src/` and `tests/`, and this README, were written by an AI assistant (Claude) at my
+request. The Experience section is a draft I asked Claude to write from what happened during the
+project. The captures and `malformed.txt` come from the course. The
 assistant ran the builds, tests, coverage and leak checks, the `tshark` comparison and the fuzzing
 in my WSL environment, and the same build, tests, leak checks and capture checks on Onyx. It
 also ran the Wireshark checks. It started Wireshark with the preferences set on the command line,
 opened Statistics → Conversations and Expert Information through Windows UI Automation, and took
-screenshots of each.
+screenshots of each (in `docs/wireshark/`, shown in the Wireshark section).
 
 ## Experience
 
-TODO
+I asked Claude to write the code and run the checks, the same way I did P2 and P3.
+
+The capture made the most sense to me because it tells the same story as section 6.7 of the book,
+in the same order: DHCP to get an address, ARP for the router, DNS for Google, then the TCP
+handshake and the GET. Frame 24 is the same ICMP time exceeded message we looked at in A5.
+
+What happened along the way:
+
+- `malformed.pcap` matched `malformed.txt` on the first run. The other four captures don't come
+  with an answer, so the real check was Wireshark. Claude compared every TCP, UDP and ARP line
+  with `tshark`, Wireshark's command-line version, field by field, and they were identical.
+- The only bug was in a test, not in the program. A pseudo header sum worked out by hand was wrong
+  (`0x1404` instead of `0x141c`), and the first test run caught it.
+- The one thing that looked like a disagreement was the window. Wireshark said `Win=64256` for
+  frame 12, and my program said 502. The SYN asked for a window scale of 128, and 502 × 128 =
+  64256. Wireshark shows the scaled number, and the handout wants the raw field.
+- Claude also built the program with the address and undefined behavior sanitizers and ran it on
+  3000 randomly broken captures. None of them crashed or read past a buffer.
+- Wireshark wasn't installed on my laptop. Claude installed it. Then I asked it to do the GUI
+  checks and take screenshots, which are in the Wireshark section above.
+- Onyx needed the VPN again before the portability check could run.
